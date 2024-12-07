@@ -73,8 +73,8 @@ In this plotly histogram, we look at the average number of positive words used f
 
 <iframe
   src="assets/positive-words-per-rating.html"
-  width="800"
-  height="600"
+  width="600"
+  height="400"
   frameborder="0"
 ></iframe>
 
@@ -84,8 +84,8 @@ In this plotly heatmap, a pivot table is shown. On the x axis is the number of i
 
 <iframe
   src="assets/complexity-heatmap.html"
-  width="800"
-  height="600"
+  width="600"
+  height="400"
   frameborder="0"
 ></iframe>
 
