@@ -50,3 +50,15 @@ print(recipes.head().to_markdown(index=False))
 |        5 |        14 |              14 |          1 |        22 |
 |        5 |        14 |              14 |          1 |        22 |
 |        4 |         7 |              12 |          2 |        40 |
+
+
+# Univariate Analysis : Ratings
+
+In the plotly histogram below, we see the distribution of ratings for the recipes. From this histogram, we see that the rating are significantly skewed, the large majority of ratings are 5.
+
+<iframe
+  src="assets/ratings-distribution.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
