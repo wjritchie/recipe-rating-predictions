@@ -132,6 +132,41 @@ We will use MSE to check how accurate our model is because we are using a regres
 
 # Baseline Model
 
+Our baseline model uses a Random Forest Regressor to predict recipe ratings. It is included in a sklearn pipeline and fitted with training data. Our columns used to predict are described below, and are left as is because they are numerical.
+
+- n_ingredients (Quantitative) : the number of ingredients in the recipe
+- n_steps (Quantitative) : the number of steps in the recipe
+- minutes (Quantitative) : the time required to make the recipe (in minutes)
+
+We do not have any categorical variables.
+
+**Mean Squared Error (MSE) = 0.49**
+
+Our model performance is not very good. This is due to the fact that our training data (the response variable: rating) is so skewed, that all of our predictions fall within a few tenths of each other. In order to correct for this, we should try scaling our numerical variables and tuning our hyperparameters.
+
+
+# Final Model
+
+Compared to our baseline model, we added several features that should increase our model accuracy.
+
+- Within our preprocessor, we included StandardScaler, which standardizes features, making sure that each prediction column is scaled the same way. We also included QuantileTransformer, which transforms features to follow a normal distribution. This should decrease the effect of outliers and skew.
+
+- Within our pipeline, we included PolynomialFeatures. This helps our model find non-linear relationships between variables that would not have been found in our base model. With an increased degree of prediction, our predictions should be more accurate as our prediction will not be linear necessarily.
+
+- When we split into training and testing data, a line "stratify=y" was added. This makes sure that our data is split up to preserve the distribution of our y column. In other words, our training and testing data should be distributed similarly now.
+
+We continued to use RandomForestRegressor as our modeling algorithm, but altered our hyperparameters using RandomizedSearchCV. Using this, we found the following to be our best hyperparameters:
+
+model__n_estimators: 175
+model__min_samples_split: 2 
+model__min_samples_leaf: 5
+model__max_depth: 5
+
+
+**The MSE of our final model was 0.48**
+
+Our final model's performance is still not great. It still has very high predictions, similar to what we saw in the base model. Once again, this is likely because of how skewed our response variable is, and therefore we are using training data that is significantly skewed. However, it has improved over our base model due to the features we added and the hyperparameter tuning that was performed.
+
 
 
 
