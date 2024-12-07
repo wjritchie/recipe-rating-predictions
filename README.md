@@ -1,5 +1,7 @@
-# recipe-rating-predictions
-Portfolio Homework - University of Michigan EECS 398-003 (Practical Data Science)
+# Predicting Recipe Ratings Using Complexity
+
+William Ritchie (writchie@umich.edu)
+
 
 # The Dataset
 
@@ -30,7 +32,7 @@ To properly analyze this dataset, we must first clean it. Here are the detailed 
 
 5. One step I took in this initial data analysis was to quantify the column 'review'. The actual written review does not provide us much information on its own, so I searched each review for positive words such as "good", "excellent", and "great". By counting positive words, I thought that we could check how positive the written review is. On average, we would expect 5 star reviews to have many positive words. We will check this idea later in the bivariate analysis section.
 
-6. If we look at the "minutes" column, we see many outliers, with several being greater than 180 days in length, and 2 different rows being as long as 2 years. These do not many sense to include, as almost the entire dataset falls within 1 day. So to avoid these outliers skewing the data, we will only focus on recipes that take a day or less to make by running : recipes = recipes[recipes['minutes'] <= 1440].
+6. If we look at the "minutes" column, we see many outliers, with several being greater than 180 days in length, and 2 different rows being as long as 2 years. These do not many sense to include because of how big of outliers they are: that's a pretty long recipe! Plus, almost the entire dataset has a time of less than 1 day. So to avoid these outliers skewing the data, we will only focus on recipes that take a day or less to make by running : recipes = recipes[recipes['minutes'] <= 1440].
 
 7. Finally, we can remove any columns that we will not use in our model or analysis. We will only need:
 
@@ -58,7 +60,7 @@ print(recipes.head().to_markdown(index=False))
 
 # Univariate Analysis : Ratings
 
-In the plotly histogram below, we see the distribution of ratings for the recipes. From this histogram, we see that the rating are significantly skewed, the large majority of ratings are 5.
+In the plotly histogram below, we see the distribution of ratings for the recipes. From this histogram, we see that the ratings are significantly skewed; the large majority of ratings are 5.
 
 <iframe
   src="assets/ratings-distribution.html"
@@ -80,7 +82,7 @@ In this plotly histogram, we look at the average number of positive words used f
 
 # Pivot Table : Complexity
 
-In this plotly heatmap, a pivot table is shown. On the x axis is the number of ingredients used in a recipe, and the y axis is the number of steps contained in the recipe. The value for each box is the average number of minutes it takes to make the recipe. In this heatmap we see that generally, as a recipe has more steps and ingredients, it takes more time to complete.
+In this plotly heatmap, a pivot table is shown. On the x-axis is the number of ingredients used in a recipe, and the y-axis is the number of steps contained in the recipe. The value for each box is the average number of minutes it takes to make the recipe. In this heatmap we see that generally, with the exception of some outliers, recipes take more time to complete if they have more ingredients and steps.
 
 <iframe
   src="assets/complexity-heatmap.html"
@@ -93,9 +95,9 @@ In this plotly heatmap, a pivot table is shown. On the x axis is the number of i
 
 In our data cleaning step, we filled in all empty values. So there are no NaN values to fill anymore. 
 
-However, in our dataset, there are ratings of 0, 1, 2, 3, 4, and 5. Looking closer at ratings of 0, we see that they are reviews with no score, and therefore should be reclassified. For example, if someone writes a positive review but doesn't leave a rating, it would be included as a 0. This will lower our model accuracy, and we should reassign values of 0.
+However, in our dataset, there are ratings of 0, 1, 2, 3, 4, and 5. Looking closer at ratings of 0, we see that they are reviews with missing scores, and therefore should be reclassified. For example, if someone writes a positive review but doesn't leave a rating, it would be included as a 0. This will lower our model accuracy, and we should reassign values of 0.
 
-Mean imputation and median imputation would not necessarily work here, as they would simply change all ratings of 0 to ratings of 5 (because of how skewed our data is). So instead I used a predictive model to predict what each rating would be. This way, the distribution of ratings remains more similar to what it was before.
+Mean imputation and median imputation would not work here, as they would simply change all ratings of 0 to ratings of 5 (because of how skewed our data is). So instead I used a predictive model to predict what each rating would be. This way, the distribution of ratings remains more similar to what it was before.
 
 Here are the value counts for rating before imputation:
 
@@ -117,6 +119,8 @@ And here are the value counts for rating after imputation:
 |        3 |    7258 |
 |        1 |    2851 |
 |        2 |    2366 |
+
+This way, the distribution remains similar between the above tables.
 
 # Our Prediction Problem
 
@@ -151,16 +155,16 @@ Compared to our baseline model, we added several features that should increase o
 
 - Within our preprocessor, we included StandardScaler, which standardizes features, making sure that each prediction column is scaled the same way. We also included QuantileTransformer, which transforms features to follow a normal distribution. This should decrease the effect of outliers and skew.
 
-- Within our pipeline, we included PolynomialFeatures. This helps our model find non-linear relationships between variables that would not have been found in our base model. With an increased degree of prediction, our predictions should be more accurate as our prediction will not be linear necessarily.
+- Within our pipeline, we included PolynomialFeatures. This helps our model find non-linear relationships between variables that would not have been found in our base model. With an increased degree of prediction, our predictions should be more accurate as our prediction will not necessarily be linear.
 
 - When we split into training and testing data, a line "stratify=y" was added. This makes sure that our data is split up to preserve the distribution of our y column. In other words, our training and testing data should be distributed similarly now.
 
 We continued to use RandomForestRegressor as our modeling algorithm, but altered our hyperparameters using RandomizedSearchCV. Using this, we found the following to be our best hyperparameters:
 
-model__n_estimators: 175
-model__min_samples_split: 2 
-model__min_samples_leaf: 5
-model__max_depth: 5
+- model__n_estimators: 175
+- model__min_samples_split: 2 
+- model__min_samples_leaf: 5
+- model__max_depth: 5
 
 
 **The MSE of our final model was 0.48**
